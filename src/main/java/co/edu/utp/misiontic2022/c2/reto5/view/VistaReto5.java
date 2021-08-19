@@ -1,17 +1,11 @@
 package co.edu.utp.misiontic2022.c2.reto5.view;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.awt.Color;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-import co.edu.utp.misiontic2022.c2.reto5.controller.ControladorRequerimientosReto5;
-import co.edu.utp.misiontic2022.c2.reto5.model.vo.LiderCiudad;
-import co.edu.utp.misiontic2022.c2.reto5.model.vo.ProyectoCiudad;
-import co.edu.utp.misiontic2022.c2.reto5.model.vo.SumaProveedor;
+import co.edu.utp.misiontic2022.c2.reto5.controller.ControladorVista;
 
 /**
  *
@@ -19,106 +13,46 @@ import co.edu.utp.misiontic2022.c2.reto5.model.vo.SumaProveedor;
  */
 public class VistaReto5 extends javax.swing.JFrame {
     // Declarando controlador para gestion de peticiones SQL
-    private ControladorRequerimientosReto5 controladorQuery;
-    // Declarando modelo de datos de la tabla.
-    private DefaultTableModel defaultTableModel;
-
+    private ControladorVista controladorVista;
     /**
      * Creates new form VistaReto5
      */    
     public VistaReto5() {
         initComponents();   //Inicializa componentes, método creado por Netbeans
-        this.setTitle("Reto 5  Ciclo 2   MisionTIC2022");   //Se coloca un titulo al JFrame
+        this.setTitle("Reto 5 Grupo 2 Ciclo 2   MisionTIC2022");   //Se coloca un titulo al JFrame
+        
+        btnRequerimiento1.setActionCommand("REQ1");
+        btnRequerimiento2.setActionCommand("REQ2");
+        btnRequerimiento3.setActionCommand("REQ3");
+        btnRegresarToMenu.setActionCommand("BACK");
         
         // Se inicializa el controlador para realizar la comunicación con la base de datos
-        controladorQuery = new ControladorRequerimientosReto5();
+        controladorVista = new ControladorVista(this);
         
         // Se agrega un ActionListener para el botón del requerimiento 1:
-        bntRequerimiento1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Se oculta el panel con los botones y se muestra el panel con la tabla.
-                panelResultados.setVisible(true);panelMenuInicial.setVisible(false);
-                // Se coloca un titulo con el nombre de la tabla de este requerimiento.
-                labelTablaResultado.setText("Proyecto Ciudad");
-                // Se captura su exite un error con la comunicación con la base de datos.
-                try{
-                    // Se consultan los datos y se pasan al método creado para
-                    // visualizar este requerimiento en la tabla.
-                    setResultadosProyectosEnTabla(controladorQuery.consultarProyectoCiudad());
-                }catch(SQLException exceptionSQL){
-                    JOptionPane.showMessageDialog(panelContenido, exceptionSQL);
-                }
-            }
-        });
+        btnRequerimiento1.addActionListener(controladorVista);
         // Se agrega un ActionListener para el botón del requerimiento 2
-        btnRequerimiento2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Se oculta el panel con los botones y se muestra el panel con la tabla.
-                panelResultados.setVisible(true);panelMenuInicial.setVisible(false);
-                // Se coloca un titulo con el nombre de la tabla de este requerimiento.
-                labelTablaResultado.setText("Suma Proveedor");
-                // Se captura su exite un error con la comunicación con la base de datos.
-                try{
-                    // Se consultan los datos y se pasan al método creado para
-                    // visualizar este requerimiento en la tabla.                    
-                    setResultadosSumarEnTabla(controladorQuery.consultarSumaProveedor());
-                }catch(SQLException exceptionSQL){
-                    JOptionPane.showMessageDialog(panelContenido, exceptionSQL);
-                }
-            }
-        });
+        btnRequerimiento2.addActionListener(controladorVista);
         // Se agrega un ActionListener para el botón del requerimiento 3
-        btnRequerimiento3.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Se oculta el panel con los botones y se muestra el panel con la tabla.
-                panelResultados.setVisible(true);panelMenuInicial.setVisible(false);
-                // Se coloca un titulo con el nombre de la tabla de este requerimiento.
-                labelTablaResultado.setText("Lider Ciudad");
-                // Se captura su exite un error con la comunicación con la base de datos.
-                try{
-                    // Se consultan los datos y se pasan al método creado para
-                    // visualizar este requerimiento en la tabla.
-                    setResultadosLiderEnTabla(controladorQuery.consultarLiderCiudad());
-                }catch(SQLException exceptionSQL){
-                    JOptionPane.showMessageDialog(panelContenido, exceptionSQL);
-                }
-            }
-        });
-        
+        btnRequerimiento3.addActionListener(controladorVista);
         // Se agrega un ActionListener para el botón de regresar al menú:
-        btnRegresarToMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Se oculta el panel con la tsbla y se muestra el panel con los botones.
-                panelMenuInicial.setVisible(true);panelResultados.setVisible(false);
-            }
-        });
+        btnRegresarToMenu.addActionListener(controladorVista);
                
-        panelResultados.setVisible(false);
+        mostrarMenu();
     }
-    
+    // Método para empezar a mostrar la ventana en la pantalla.
+    public void iniciar(){
+        setVisible(true);
+    }
     /**
-     * Función para colocar los datos recibidos del controlador para el requerimiento 1
-     * en la tabla de resultados.
-     * @param data ArrayList<ProyectoCiudad>
-     */    
-    private void setResultadosProyectosEnTabla(ArrayList<ProyectoCiudad> data){
-        //Se crea un array vacio para los tres campos recibidos y un campo de indice
-        Object[][] datosTabla = new Object[data.size()][4]; 
-        // Titulos de los campos de la tabla de requerimiento 1
-        String[] titulosTabla = new String[]{"#","Nombre Constructora", "Fecha", "Clasificacion"};
-        // Se llena el array de datos con el ArrayList recibido
-        for(int idx = 0; idx < data.size(); idx ++){
-            datosTabla[idx][0] = idx;
-            datosTabla[idx][1] = data.get(idx).getConstructora();
-            datosTabla[idx][2] = data.get(idx).getFechaInicio();
-            datosTabla[idx][3] = data.get(idx).getClasificacion();
-        }
+     * Función para que la tabla muestre datos definidos en la tabla.
+     * @param datosTabla Object[][] con los datos de la tabla.
+     * @param titulosTabla String[] con los titulos de la tabla.
+     * Deben tener el mismo tamaño de columnas.
+     */
+    public void setDatosTabla(Object[][] datosTabla, String[] titulosTabla){
         // Se crea un DefaultTableModel con los datos y titulos de los campos creados anteriormente.
-        defaultTableModel = new DefaultTableModel(datosTabla,titulosTabla)
+        DefaultTableModel defaultTableModel = new DefaultTableModel(datosTabla,titulosTabla)
         {
             //Se modifica el render de las celdas para que no se puedan editar
             public boolean isCellEditable(int row, int column){
@@ -131,66 +65,35 @@ public class VistaReto5 extends javax.swing.JFrame {
         tablaResutados.getColumnModel().getColumn(0).setPreferredWidth(20);
         tablaResutados.getColumnModel().getColumn(0).setMaxWidth(20);
     }
+
     /**
-     * Función para colocar los datos recibidos del controlador para el requerimiento 2
-     * en la tabla de resultados.
-     * @param data ArrayList<SumaProveedor>
-     */    
-    private void setResultadosSumarEnTabla(ArrayList<SumaProveedor> data){
-        //Se crea un array vacio para el campo recibido y un campo de indice
-        Object[][] datosTabla = new Object[data.size()][2];
-        // Titulos de los campos de la tabla de requerimiento 2
-        String[] titulosTabla = new String[]{"#","Suma Cantidad"};
-        // Se llena el array de datos con el ArrayList recibido
-        for(int idx = 0; idx < data.size(); idx ++){
-            datosTabla[idx][0] = idx;
-            datosTabla[idx][1] = data.get(idx).getSumaProveedor();
-        }
-        // Se crea un DefaultTableModel con los datos y titulos de los campos creados anteriormente.
-        defaultTableModel = new DefaultTableModel(datosTabla,titulosTabla)
-        {
-            //Se modifica el render de las celdas para que no se puedan editar
-            public boolean isCellEditable(int row, int column){
-                return false;
-            }
-        };       
-        // Se agrega el modelo de la tabla a la tabla del formulario.
-        tablaResutados.setModel(defaultTableModel);
-        // se define que la columna del indice tenga un tamaño menor
-        tablaResutados.getColumnModel().getColumn(0).setPreferredWidth(20);
-        tablaResutados.getColumnModel().getColumn(0).setMaxWidth(20);
+     * Función para hacer visible el panel de botones y ocultar el panel con la tabla.
+     */
+    public void mostrarMenu(){
+        panelMenuInicial.setVisible(true);panelResultados.setVisible(false);
     }
+    
     /**
-     * Función para colocar los datos recibidos del controlador para el requerimiento 3
-     * en la tabla de resultados.
-     * @param data ArrayList<LiderCiudad>
-     */ 
-    private void setResultadosLiderEnTabla(ArrayList<LiderCiudad> data){
-        //Se crea un array vacio para el campo recibido y un campo de indice
-        Object[][] datosTabla = new Object[data.size()][2];
-        // Titulos de los campos de la tabla de requerimiento 3
-        String[] titulosTabla = new String[]{"#","Líder Ciudad"};
-        // Se llena el array de datos con el ArrayList recibido
-        for(int idx = 0; idx < data.size(); idx ++){
-            datosTabla[idx][0] = idx;
-            datosTabla[idx][1] = data.get(idx).getLiderCiudad();
-        }
-        // Se crea un DefaultTableModel con los datos y titulos de los campos creados anteriormente.
-        defaultTableModel = new DefaultTableModel(datosTabla,titulosTabla)
-        {
-            //Se modifica el render de las celdas para que no se puedan editar
-            public boolean isCellEditable(int row, int column){
-                return false;
-            }
-        };       
-        // Se agrega el modelo de la tabla a la tabla del formulario.
-        tablaResutados.setModel(defaultTableModel);
-        // se define que la columna del indice tenga un tamaño menor
-        tablaResutados.getColumnModel().getColumn(0).setPreferredWidth(20);
-        tablaResutados.getColumnModel().getColumn(0).setMaxWidth(20);
+     * Función para hacer visible el panel con la tabla y ocultar el panel con los botones.
+     */
+    public void mostrarTablaResultados(){
+        panelMenuInicial.setVisible(false);panelResultados.setVisible(true);
     }
-        
-        
+    
+    /**
+     * Función para colocarle el texto al label de titulo de la tabla.
+     */
+    public void setTituloTabla(String text){
+        labelTablaResultado.setText(text);
+    }
+    
+    /**
+     * Función para abrir un dialogo en la ventana indicando un error con las consultas a la base de datos.
+     */
+    public void mostrarError(SQLException exceptionSQL){
+        JOptionPane.showMessageDialog(panelContenido, exceptionSQL, "Error SQL", JOptionPane.ERROR_MESSAGE);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -213,28 +116,32 @@ public class VistaReto5 extends javax.swing.JFrame {
         panelContenido = new javax.swing.JPanel();
         panelMenuInicial = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        bntRequerimiento1 = new ButtonImageComponent("Requerimiento 1",TextoBotones.REQUERIMIENTO1.getTexto(), ImgApp.IMG_REQ_1.toString());
+        btnRequerimiento1 = new ButtonImageComponent("Requerimiento 1",TextoBotones.REQUERIMIENTO1.getTexto(), ImgApp.IMG_REQ_1.toString());
         btnRequerimiento2 = new ButtonImageComponent("Requerimiento 2",TextoBotones.REQUERIMIENTO2.getTexto(), ImgApp.IMG_REQ_2.toString());
         btnRequerimiento3 = new co.edu.utp.misiontic2022.c2.reto5.view.ButtonImageComponent("Requerimiento 3",TextoBotones.REQUERIMIENTO3.getTexto(), ImgApp.IMG_REQ_3.toString());
         jPanel9 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         panelResultados = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tablaResutados = new javax.swing.JTable();
+        encabezado = new javax.swing.JPanel();
         btnRegresarToMenu = new javax.swing.JButton();
         labelTablaResultado = new javax.swing.JLabel();
+        tabla = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablaResutados = new javax.swing.JTable();
         panel = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setBackground(new java.awt.Color(0, 51, 51));
+        setBackground(ColorAPP.FONDO.getColor());
         setMinimumSize(new java.awt.Dimension(700, 650));
         setName("vistaPrincipal"); // NOI18N
         setPreferredSize(new java.awt.Dimension(700, 650));
-        getContentPane().setLayout(new java.awt.BorderLayout(5, 10));
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
         panel_inicio.setBackground(ColorAPP.FONDO.getColor());
-        panel_inicio.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        panel_inicio.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        panel_inicio.setMinimumSize(new java.awt.Dimension(630, 550));
+        panel_inicio.setPreferredSize(new java.awt.Dimension(650, 600));
         panel_inicio.setLayout(new javax.swing.BoxLayout(panel_inicio, javax.swing.BoxLayout.PAGE_AXIS));
 
         panelTitulo.setBackground(ColorAPP.FONDO.getColor());
@@ -329,6 +236,9 @@ public class VistaReto5 extends javax.swing.JFrame {
         panelContenido.setPreferredSize(new java.awt.Dimension(595, 300));
         panelContenido.setLayout(new javax.swing.OverlayLayout(panelContenido));
 
+        panelMenuInicial.setMaximumSize(new java.awt.Dimension(5000, 2147483647));
+        panelMenuInicial.setName(""); // NOI18N
+        panelMenuInicial.setPreferredSize(new java.awt.Dimension(595, 350));
         panelMenuInicial.setLayout(new java.awt.BorderLayout());
 
         jPanel2.setBackground(ColorAPP.FONDO.getColor());
@@ -337,11 +247,11 @@ public class VistaReto5 extends javax.swing.JFrame {
         jPanel2.setPreferredSize(new java.awt.Dimension(500, 300));
         jPanel2.setLayout(new java.awt.GridLayout(1, 0, 5, 5));
 
-        bntRequerimiento1.setForeground(Color.WHITE);
-        bntRequerimiento1.setText("Requerimiento 1");
-        bntRequerimiento1.setPreferredSize(new java.awt.Dimension(80, 60));
-        bntRequerimiento1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jPanel2.add(bntRequerimiento1);
+        btnRequerimiento1.setForeground(Color.WHITE);
+        btnRequerimiento1.setText("Requerimiento 1");
+        btnRequerimiento1.setPreferredSize(new java.awt.Dimension(80, 60));
+        btnRequerimiento1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        jPanel2.add(btnRequerimiento1);
 
         btnRequerimiento2.setForeground(Color.WHITE);
         btnRequerimiento2.setText("Requerimiento 2");
@@ -380,7 +290,7 @@ public class VistaReto5 extends javax.swing.JFrame {
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 585, Short.MAX_VALUE)
+                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel9Layout.setVerticalGroup(
@@ -393,8 +303,37 @@ public class VistaReto5 extends javax.swing.JFrame {
         panelContenido.add(panelMenuInicial);
 
         panelResultados.setBackground(ColorAPP.FONDO.getColor());
-        panelResultados.setMaximumSize(new java.awt.Dimension(595, 32767));
+        panelResultados.setMaximumSize(new java.awt.Dimension(5905, 32767));
         panelResultados.setMinimumSize(new java.awt.Dimension(590, 23));
+        panelResultados.setName(""); // NOI18N
+        panelResultados.setLayout(new javax.swing.BoxLayout(panelResultados, javax.swing.BoxLayout.PAGE_AXIS));
+
+        encabezado.setMaximumSize(new java.awt.Dimension(32767, 40));
+        encabezado.setOpaque(false);
+        encabezado.setPreferredSize(new java.awt.Dimension(1752, 40));
+        encabezado.setLayout(new javax.swing.BoxLayout(encabezado, javax.swing.BoxLayout.LINE_AXIS));
+
+        btnRegresarToMenu.setBackground(ColorAPP.FONDO.getColor());
+        btnRegresarToMenu.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnRegresarToMenu.setForeground(Color.WHITE);
+        btnRegresarToMenu.setText("Regresar");
+        btnRegresarToMenu.setBorderPainted(false);
+        encabezado.add(btnRegresarToMenu);
+
+        labelTablaResultado.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
+        labelTablaResultado.setForeground(Color.WHITE);
+        labelTablaResultado.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        labelTablaResultado.setText("Resultados");
+        labelTablaResultado.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        labelTablaResultado.setMaximumSize(new java.awt.Dimension(2000, 22));
+        labelTablaResultado.setMinimumSize(new java.awt.Dimension(308, 22));
+        labelTablaResultado.setPreferredSize(new java.awt.Dimension(508, 22));
+        labelTablaResultado.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        encabezado.add(labelTablaResultado);
+
+        panelResultados.add(encabezado);
+
+        tabla.setOpaque(false);
 
         tablaResutados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -409,43 +348,28 @@ public class VistaReto5 extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tablaResutados);
 
-        btnRegresarToMenu.setBackground(ColorAPP.FONDO.getColor());
-        btnRegresarToMenu.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        btnRegresarToMenu.setForeground(Color.WHITE);
-        btnRegresarToMenu.setText("Regresar");
-        btnRegresarToMenu.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        btnRegresarToMenu.setBorderPainted(false);
-
-        labelTablaResultado.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
-        labelTablaResultado.setForeground(Color.WHITE);
-        labelTablaResultado.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        labelTablaResultado.setText("Resultados");
-
-        javax.swing.GroupLayout panelResultadosLayout = new javax.swing.GroupLayout(panelResultados);
-        panelResultados.setLayout(panelResultadosLayout);
-        panelResultadosLayout.setHorizontalGroup(
-            panelResultadosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelResultadosLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelResultadosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(panelResultadosLayout.createSequentialGroup()
-                        .addComponent(btnRegresarToMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(labelTablaResultado, javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1))
-                .addContainerGap())
+        javax.swing.GroupLayout tablaLayout = new javax.swing.GroupLayout(tabla);
+        tabla.setLayout(tablaLayout);
+        tablaLayout.setHorizontalGroup(
+            tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 652, Short.MAX_VALUE)
+            .addGroup(tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(tablaLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
-        panelResultadosLayout.setVerticalGroup(
-            panelResultadosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelResultadosLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelResultadosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnRegresarToMenu, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
-                    .addComponent(labelTablaResultado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
-                .addContainerGap())
+        tablaLayout.setVerticalGroup(
+            tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 410, Short.MAX_VALUE)
+            .addGroup(tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(tablaLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
+
+        panelResultados.add(tabla);
 
         panelContenido.add(panelResultados);
 
@@ -466,7 +390,7 @@ public class VistaReto5 extends javax.swing.JFrame {
         panel.setLayout(panelLayout);
         panelLayout.setHorizontalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 605, Short.MAX_VALUE)
+            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 652, Short.MAX_VALUE)
         );
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -478,16 +402,25 @@ public class VistaReto5 extends javax.swing.JFrame {
 
         panel_inicio.add(panel);
 
-        getContentPane().add(panel_inicio, java.awt.BorderLayout.CENTER);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 24;
+        gridBagConstraints.ipady = 24;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        getContentPane().add(panel_inicio, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton bntRequerimiento1;
     private javax.swing.JButton btnRegresarToMenu;
+    private javax.swing.JButton btnRequerimiento1;
     private javax.swing.JButton btnRequerimiento2;
     private javax.swing.JButton btnRequerimiento3;
+    private javax.swing.JPanel encabezado;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
@@ -506,6 +439,7 @@ public class VistaReto5 extends javax.swing.JFrame {
     private javax.swing.JPanel panelResultados;
     private javax.swing.JPanel panelTitulo;
     private javax.swing.JPanel panel_inicio;
+    private javax.swing.JPanel tabla;
     private javax.swing.JTable tablaResutados;
     // End of variables declaration//GEN-END:variables
 }
